@@ -12,10 +12,12 @@ J = 0;
 % ====================== YOUR CODE HERE ======================
 % Instructions: Compute the cost of a particular choice of theta
 %               You should set J to the cost.
-
-
-
-
+H=ones(m,1);
+for i=[1:m]
+    H(i,1)=theta'*X(i,:)';
+end
+S=sum((H-y).^2);
+J=S./(2*m);
 
 % =========================================================================
 

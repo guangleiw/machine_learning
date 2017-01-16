@@ -16,17 +16,16 @@ for iter = 1:num_iters
     % Hint: While debugging, it can be useful to print out the values
     %       of the cost function (computeCostMulti) and gradient here.
     %
-
-
-
-
-
-
-
-
-
-
-
+    sum0=0;
+    sum1=0;
+    sum2=0;
+    for i=1:m
+        t= theta'*X(i,:)'-y(i,:);
+        sum0=sum0+t;
+        sum1=sum1+t*X(i,2);
+        sum2=sum2+t*X(i,3);
+    end
+    theta = theta-[alpha*sum0/m;alpha*sum1/m;alpha*sum2/m];
     % ============================================================
 
     % Save the cost J in every iteration    
