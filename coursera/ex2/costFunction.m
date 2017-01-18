@@ -19,12 +19,21 @@ grad = zeros(size(theta));
 %
 % Note: grad should have the same dimensions as theta
 %
+% disp(theta);
+% disp(X);
+% disp(y);
+z = X*theta;
+hz=sigmoid(z);
+disp(hz);
+[row,col] = size(X);
+p1=(-1.*y)'*log10(hz);
+p2=(y-1)'*log10(1-hz);
+J=(p1+p2)/(row);
 
-
-
-
-
-
+for j=1:(col)
+    grad(j)=(hz-y)'*X(:,j);
+    grad(j)=grad(j)/row;
+end
 
 
 % =============================================================
