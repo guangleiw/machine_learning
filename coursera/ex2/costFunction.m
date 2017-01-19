@@ -22,19 +22,32 @@ grad = zeros(size(theta));
 % disp(theta);
 % disp(X);
 % disp(y);
-z = X*theta;
-hz=sigmoid(z);
-disp(hz);
 [row,col] = size(X);
-p1=(-1.*y)'*log10(hz);
-p2=(y-1)'*log10(1-hz);
-J=(p1+p2)/(row);
+
+mean_x = mean(X(:,2:col));
+max_x = max(X(:,2:col));
+min_x=min(X(:,2:col));
+% disp(mean_x);
+% disp(max_x);
+% disp(min_x);
+% pause;
+% sub =(X(:,2:col)-mean_x)./(max_x-min_x);
+sub = (bsxfun(@minus,X(:,2:col),mean_x));
+% plot(sub);pause;
+% disp(size(sub));
+ma_mi = repmat(max_x-min_x,row,1);
+% disp([X(:,1) (sub./ma_mi)]);pause;
+XX= [X(:,1) (sub./ma_mi)];
+
+z = XX*theta;
+hz=sigmoid(z);
+
+J=((-1.*y)'*log10(hz)+(y-1)'*log10(1-hz))/(row);
 
 for j=1:(col)
     grad(j)=(hz-y)'*X(:,j);
     grad(j)=grad(j)/row;
 end
-
 
 % =============================================================
 
