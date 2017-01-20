@@ -7,7 +7,7 @@ function [J, grad] = costFunction(theta, X, y)
 % Initialize some useful values
 m = length(y); % number of training examples
 
-% You need to return the following variables correctly 
+% You need to return the following variables correctly
 J = 0;
 grad = zeros(size(theta));
 
@@ -23,26 +23,19 @@ grad = zeros(size(theta));
 % disp(X);
 % disp(y);
 [row,col] = size(X);
-
-mean_x = mean(X(:,2:col));
-max_x = max(X(:,2:col));
-min_x=min(X(:,2:col));
-% disp(mean_x);
-% disp(max_x);
-% disp(min_x);
-% pause;
-% sub =(X(:,2:col)-mean_x)./(max_x-min_x);
-sub = (bsxfun(@minus,X(:,2:col),mean_x));
-% plot(sub);pause;
-% disp(size(sub));
-ma_mi = repmat(max_x-min_x,row,1);
-% disp([X(:,1) (sub./ma_mi)]);pause;
-XX= [X(:,1) (sub./ma_mi)];
-
-z = XX*theta;
+% ===========feature scaling==============
+% mean_x = mean(X(:,2:col));
+% max_x = max(X(:,2:col));
+% min_x=min(X(:,2:col));
+% sub = (bsxfun(@minus,X(:,2:col),mean_x));
+% 
+% ma_mi = repmat(max_x-min_x,row,1);
+% X= [X(:,1) (sub./ma_mi)];
+% ========================================
+z = X*theta;
 hz=sigmoid(z);
 
-J=((-1.*y)'*log10(hz)+(y-1)'*log10(1-hz))/(row);
+J=((-1.*y)'*log(hz)+(y-1)'*log(1-hz))/(row);
 
 for j=1:(col)
     grad(j)=(hz-y)'*X(:,j);
