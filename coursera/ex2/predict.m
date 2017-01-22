@@ -15,12 +15,15 @@ p = zeros(m, 1);
 %               You should set p to a vector of 0's and 1's
 %
 
-
-
-
-
-
-
+% disp(size(theta));
+% disp(X);
+hz = sigmoid(X*theta);
+len=size(hz);
+for i=1:len
+    if hz(i)>=0.5
+        p(i)=1;
+    end
+end
 % =========================================================================
 
 

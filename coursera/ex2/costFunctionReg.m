@@ -16,11 +16,24 @@ grad = zeros(size(theta));
 %               You should set J to the cost.
 %               Compute the partial derivatives and set grad to the partial
 %               derivatives of the cost w.r.t. each parameter in theta
+[row,col] = size(X);
+z=X*theta;
+hz=sigmoid(z);
 
+[row_theta,col_theta]=size(theta);
+theta_part_1=theta(1,:);
+theta_part_2=theta(2:row_theta,:);
 
+J=((-1.*y)'*log(hz)+(y-1)'*log(1-hz))/(row)+theta_part_2'*theta_part_2*lambda/(2*row);
 
-
-
+for j=1:(col)    
+    grad(j)=(hz-y)'*X(:,j);
+    if 1==j
+        grad(1)=grad(j)/row;
+        continue;
+    end
+    grad(j)=grad(j)/row + theta(j)*lambda/row;
+end
 
 % =============================================================
 
