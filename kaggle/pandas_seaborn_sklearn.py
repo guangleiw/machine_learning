@@ -72,4 +72,18 @@ y_pred=linreg.predict(X_test)
 
 ##### Computing the RMSE(Root Mean Squared Error) for our Sales predictions
 from sklearn import metrics
-print(np.sqrt(metrics.mean_squared_error(y_test,y_pred)))
+rmse = np.sqrt(metrics.mean_squared_error(y_test,y_pred))
+
+##### Feature selection
+#Does 'Newspaper' "belong" in our model?
+#In other words,does it improve the quality of our predictions?
+#Let's remove it from our model and check the RMSE!!
+feature_cols = ['TV','Radio']
+
+X=data[feature_cols]
+y=data.Sales
+X_train,X_test,y_train,y_test=train_test_split(X,y,random_state=1)
+linreg.fit(X_train,y_train)
+y_pred=linreg.predict(X_test)
+rmse =np.sqrt(metrics.mean_squared_error(y_pred,y_test))
+print(rmse)
