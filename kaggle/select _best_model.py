@@ -25,14 +25,14 @@ print(metrics.accuracy_score(y_test,y_pred))
 # we get different accuracy with different random_states
 
 ##### cross-validation example : parameter tuning
-from sklearn.cross_validation import cross_val_score
+from sklearn.model_selection import cross_val_score
 
 knn=KNeighborsClassifier(n_neighbors=5)
 scores = cross_val_score(knn,X,y,cv=10,scoring='accuracy')
-print(scores)
+# print(scores)
 
 #use average accurarcy as an estimate of out-of-sample accuracy
-print(scores.mean())
+# print(scores.mean())
 
 #search for an optional value of k for KNN
 k_range=range(1,31)
@@ -41,10 +41,67 @@ for k in k_range:
     knn=KNeighborsClassifier(n_neighbors=k)
     scores = cross_val_score(knn,X,y,cv=10,scoring='accuracy')
     k_scores.append(scores.mean())
-print(k_scores)
+#print(k_scores)
 
 import matplotlib.pyplot as plt
 plt.plot(k_range,k_scores)
 plt.xlabel('Value of k for  KNN')
 plt.ylabel('Cross-Validated Accuracy')
-plt.show()
+#plt.show()
+#####
+
+##### cross-validation example : model selection
+#compare the best KNN model with logistic regression on
+#the iris dataset
+#10-fold cross-validation with the best KNN model
+knn=KNeighborsClassifier(n_neighbors=10)
+#print(cross_val_score(knn,X,y,cv=10,scoring='accuracy').mean())
+
+# 10-fold validation with logistic regression
+from sklearn.linear_model import LogisticRegression
+logreg=LogisticRegression()
+#print(cross_val_score(logreg,X,y,cv=10,scoring='accuracy').mean())
+#####
+
+
+#####cross-validation : feature selection
+#goal: select whether the Newspaper feature should be included
+#in the linear regression model on the advertising dataset
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+# read in the advertising dataset
+data = pd.read_csv('./data/Advertising.csv',index_col=0)
+
+# create a python list of three feature names
+feature_cols = ['TV','Radio','Newspaper']
+
+#use the list to select a subset of the DataFrame(X)
+X=data[feature_cols]
+
+#select the Sales columns as the response(y)
+y=data.Sales
+
+#10-fold cross-validation with all three features
+lm=LinearRegression()
+scores=cross_val_score(lm,X,y,cv=10,scoring='neg_mean_squared_error')
+# print(scores)
+
+#fix the sign of MSE scores
+mse_scores = -scores
+rmse = np.sqrt(mse_scores)
+# print(mse_scores)
+
+#calculate the average RMSE
+print(rmse.mean())
+
+#remove the feature Newspaper
+feature_cols=['TV','Radio']
+X=data[feature_cols]
+print(np.sqrt(-cross_val_score(lm,X,y,cv=10,scoring='neg_mean_squared_error')).mean())
+
+#remove the feature Radio
+feature_cols=['TV','Newspaper']
+X=data[feature_cols]
+print(np.sqrt(-cross_val_score(lm,X,y,cv=10,scoring='neg_mean_squared_error')).mean())
