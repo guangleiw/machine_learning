@@ -49,14 +49,15 @@ grid.fit(X,y)
 #print(grid.cv_results_['mean_test_score'])
 ##
 
-#plot the result
-import matplotlib.pyplot as plt
-plt.plot(k_range,grid.cv_results_['mean_test_score'])
-plt.xlabel('Value of k for KNN')
-plt.ylabel('Cross-validation Accuracy')
-plt.show()
+##plot the result
+#import matplotlib.pyplot as plt
+#plt.plot(k_range,grid.cv_results_['mean_test_score'])
+#plt.xlabel('Value of k for KNN')
+#plt.ylabel('Cross-validation Accuracy')
+#plt.show()
 
-# Notice: best_* is the properties of grid , not cv_results_
-print(grid.best_estimator_)
-print(grid.best_params_)
-print(grid.best_score_)
+## Notice: best_* is the properties of grid , not cv_results_
+#print(grid.best_estimator_)
+#print(grid.best_params_)
+#print(grid.best_score_)
+
