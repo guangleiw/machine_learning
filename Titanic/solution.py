@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import numpy as np
 import sys
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -148,5 +149,33 @@ for ele in all_src:
 #drop the Name and PassengerId
 train_src = train_src.drop(['Name','PassengerId'],axis=1)
 test_src = test_src.drop(['Name'],axis=1)
-print(train_src.shape)
-print(test_src.shape)
+all_src = [train_src,test_src]
+#print(train_src.shape)
+#print(test_src.shape)
+
+# Converting a categorical feature gender
+for ele in all_src:
+	ele['Sex'] = ele['Sex'].map({"male":0,"female":1}).astype(int)
+
+#print(train_src.head())
+
+guess_ages = np.zeros((2,3))
+for ele in all_src:
+	#print(ele.info());exit();
+	for i in range(0,2):
+		for j in range(0,3):
+			idx = (ele['Sex'] == i) & (ele['Pclass'] == j+1);
+			guess = ele[idx]['Age'].dropna()
+			#print(guess);exit();
+			guess_age = guess.median()
+			#print(type(guess_age)) 
+			#exit()
+			
+			guess_ages[i,j] = (guess_age/0.5 + 0.5)*0.5
+			
+	for i in range(0,2):
+		for j in range(0,3):
+			ele.loc[(ele.Age.isnull())&(ele.Sex == i)&(ele.Pclass == j+1),'Age'] = guess_ages[i,j]
+		ele['Age'] = ele['Age'].astype(int)
+
+print(train_src.head())
