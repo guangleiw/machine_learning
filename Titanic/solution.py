@@ -204,4 +204,33 @@ all_src = [train_src,test_src]
 # And then , we can drop the above features
 for ele in all_src:
 	ele['FamilySize'] = ele['SibSp'] + ele['Parch'] + 1
-train_src[['FamilySize','Survived']].groupby(['FamilySize'],as_index = False).mean().sort_values(by='Survived',ascending=False)
+famsize_sur = train_src[['FamilySize','Survived']].groupby(['FamilySize'],as_index = False).mean().sort_values(by='Survived',ascending=False)
+#print(famsize_sur)
+
+#create a new feature called IsAlone
+for ele in all_src:
+	ele['IsAlone'] = 0;
+	ele.loc[ele.FamilySize == 1,'IsAlone'] = 1
+
+#print(train_src[['IsAlone','Survived']].groupby(['IsAlone'],as_index=False).mean())
+
+#Let us drop Parch SibSp and FamilySize features in favor of IsAlone
+train_src  =train_src.drop(['Parch','SibSp','FamilySize'],axis=1)
+test_src = test_src.drop(['Parch','SibSp','FamilySize'],axis=1)
+all_src = [train_src,test_src]
+
+#print(train_src.head())
+
+###Completing a categorical feature
+# Embarked feature takes S Q C values based on port of embarkation .
+# Our training dataset has two missing values.
+# we simply fill these 	with the most common occurance 
+freq_port = train_src.Embarked.dropna().mode()[0]
+print(freq_port)
+for ele in all_src:
+	ele['Embarked'] = ele['Embarked'].fillna(freq_port)
+#print(train_src[['Embarked','Survived']].groupby(['Embarked'],as_index=False).mean().sort_values(by='Survived',ascending=False))
+#converting categorical feature to numeric
+for ele in all_src:
+	ele['Embarked'] = ele['Embarked'].map({'S':0,'C':1,'Q':2}).astype(int)
+#print(train_src.head())
