@@ -49,11 +49,12 @@ test_src=pd.read_csv(PATH+"/data/test.csv")
 
 #print(train_src['Age']);
 #print(pd.isnull(train_src['Age']))
-old_age=train_src['Age'];
-new_age=train_src['Age'].fillna(train_src['Age'].mean())
+#old_age=train_src['Age'];
+#new_age = old_age;
+#new_age=train_src['Age'].fillna(train_src['Age'].mean())
 #print(old_age.describe());
 #print(new_age.describe());
-train_src['Age'] = new_age
+#train_src['Age'] = new_age
 #print(pd.isnull(train_src['Age']))
 #exit()
 
@@ -169,13 +170,38 @@ for ele in all_src:
 			#print(guess);exit();
 			guess_age = guess.median()
 			#print(type(guess_age)) 
-			#exit()
-			
+			#exit()			
 			guess_ages[i,j] = (guess_age/0.5 + 0.5)*0.5
 			
 	for i in range(0,2):
 		for j in range(0,3):
-			ele.loc[(ele.Age.isnull())&(ele.Sex == i)&(ele.Pclass == j+1),'Age'] = guess_ages[i,j]
-		ele['Age'] = ele['Age'].astype(int)
+			ele.loc[(ele.Age.isnull())&(ele['Sex'] == i)&(ele['Pclass'] == j+1),'Age'] = guess_ages[i,j]
+	ele['Age'] = ele.Age.astype(int)
 
-print(train_src.head())
+#print(train_src.head())
+# Create Age bands and determine correlations with Survived.
+
+train_src['AgeBand'] = pd.cut(train_src['Age'],5)
+age_sur = train_src[['AgeBand','Survived']].groupby(['AgeBand'],as_index = False).mean().sort_values(by='AgeBand',ascending=True)
+#print(age_sur)
+
+for ele in all_src:
+	ele.loc[ele['Age']<= 16,'Age'] = 0
+	ele.loc[(ele['Age']> 16) & (ele['Age'] <=32),'Age'] = 1
+	ele.loc[(ele['Age']> 32) & (ele['Age'] <=48),'Age'] = 2
+	ele.loc[(ele['Age']> 48) & (ele['Age'] <=64),'Age'] = 3
+	ele.loc[ele['Age']>64,'Age'] = 4
+	
+#print(train_src.head())
+# remove the AgeBand feature
+train_src = train_src.drop(['AgeBand'],axis = 1)
+all_src = [train_src,test_src]
+#print(train_src.head())
+
+
+# create a new feature combining existing fetures
+# we can create a new feature for FamilySize which combines Parch and SibSp
+# And then , we can drop the above features
+for ele in all_src:
+	ele['FamilySize'] = ele['SibSp'] + ele['Parch'] + 1
+train_src[['FamilySize','Survived']].groupby(['FamilySize'],as_index = False).mean().sort_values(by='Survived',ascending=False)
