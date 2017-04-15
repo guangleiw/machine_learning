@@ -4,6 +4,12 @@ import numpy as np
 import sys
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
 sns.set(style='whitegrid')
 
 PATH=sys.path[0]
@@ -14,8 +20,8 @@ PATH=sys.path[0]
 ###
 # download data from here:
 # https://www.kaggle.com/c/titanic/data
-train_src=pd.read_csv(PATH+"/data/train.csv")
-test_src=pd.read_csv(PATH+"/data/test.csv")
+train_src=pd.read_csv(PATH+"/input/train.csv")
+test_src=pd.read_csv(PATH+"/input/test.csv")
 #print(test_src.head())
 
 ###
@@ -234,3 +240,129 @@ for ele in all_src:
 for ele in all_src:
 	ele['Embarked'] = ele['Embarked'].map({'S':0,'C':1,'Q':2}).astype(int)
 #print(train_src.head())
+
+# Complete the Fare feature for single missing value in
+# test dataset using mode to get the value 
+# that occurs most frequently for this feature
+# we do this in a line of code 
+test_src['Fare'].fillna(test_src['Fare'].dropna().median(),inplace = True)
+#print(test_src.head())
+# we can also create fareband
+train_src['FareBand'] = pd.qcut(train_src['Fare'],4)
+fareband_sur = train_src[['FareBand','Survived']].groupby(['FareBand'],as_index = False).mean().sort_values(by='FareBand',ascending=True)
+#print(fareband_sur);
+
+for ele in all_src:
+	ele.loc[ele['Fare']<=7.91,'Fare'] = 0
+	ele.loc[(ele['Fare']>7.91) & (ele['Fare']<=14.454),'Fare'] = 1
+	ele.loc[(ele['Fare']>14.454) & (ele['Fare']<= 31),'Fare'] = 2
+	ele.loc[(ele['Fare']>31) & (ele['Fare']<= 512.329),'Fare'] = 3
+	ele['Fare'] = ele['Fare'].astype(int)
+	
+train_src = train_src.drop(['FareBand'],axis = 1)
+all_src = [train_src , test_src]
+#print(train_src.head())
+#print(test_src.head(10))
+
+
+##########
+#Model  predict  and solve
+# Now we are going to train a model and predict the required solution
+# There are 60+ predictive modelling algorithms to choose from.
+# We must understand the type of problem and solution requirement to narrow down to a select few models
+# which we can evaluate. 
+# Our problem is a classification and regression problem.
+# We want to identify relationship between output (Survived or not) with other variables or features (Gender, Age, Port...). 
+# We are also perfoming a category of machine learning which is called supervised learning as we are training our model with a given dataset.
+# With these two criteria - Supervised Learning plus Classification and Regression, we can narrow down our choice of models to a few.
+## These include :
+# Logistic Regression
+# KNN or k-Nearest Neighbors
+# Support Vector Machines
+# Naive Bayes classifier
+# Decision Tree
+# Random Forrest
+# Perceptron
+# Artificial neural network
+# RVM or Relevance Vector Machine
+
+#prepare data
+X_train = train_src.drop("Survived",axis=1)
+#Y_train = train_src.Survived
+Y_train = train_src['Survived']
+X_test = test_src.drop("PassengerId",axis=1).copy()
+#print(X_train.shape)
+#print(Y_train.shape)
+#print(X_test.shape)
+
+# Logsitic Regression
+lreg = LogisticRegression();
+lreg.fit(X_train,Y_train)
+Y_pred = lreg.predict(X_test)
+lreg_acc = round(lreg.score(X_train,Y_train)*100,2)
+#print(lreg_acc)
+
+coeff_df = pd.DataFrame(train_src.columns.delete(0))
+coeff_df.columns = ['Feature']
+coeff_df['Correlation'] = pd.Series(lreg.coef_[0])
+
+#print(coeff_df.sort_values(by='Correlation',ascending=False))
+
+
+# Support Vector Machines
+svc = SVC()
+svc.fit(X_train,Y_train)
+Y_pred = svc.predict(X_test)
+svc_acc = round(svc.score(X_train,Y_train)*100,2)
+#print(svc_acc)
+
+# KNN
+knn = KNeighborsClassifier(n_neighbors=3)
+knn.fit(X_train,Y_train)
+Y_pred = knn.predict(X_test)
+knn_acc = round(knn.score(X_train,Y_train)*100,2)
+#print(knn_acc)
+
+# Gaussian Naive Bayes
+gaus = GaussianNB()
+gaus.fit(X_train,Y_train)
+Y_pred = gaus.predict(X_test)
+gaus = round(gaus.score(X_train,Y_train)*100,2)
+#print(gaus)
+
+# Perceptron
+# Linear SVC
+# Stochastic Gradient Descent
+
+# Decision Tree
+dec_tree = DecisionTreeClassifier()
+dec_tree.fit(X_train,Y_train)
+Y_pred = dec_tree.predict(X_test)
+dec_acc = round(dec_tree.score(X_train,Y_train)*100,2)
+# print(dec_acc)
+
+# Random Forest
+random_forest = RandomForestClassifier(n_estimators=100)
+random_forest.fit(X_train, Y_train)
+Y_pred = random_forest.predict(X_test)
+random_forest.score(X_train, Y_train)
+rad_forest = round(random_forest.score(X_train, Y_train) * 100, 2)
+print(rad_forest)
+
+########
+# Model evaluation 
+# we can now rank our evaluation of all the models to choose 
+# the best one for our problem.
+# while both DEcision Tree and Random Forest score the same.
+# we choose to use random forest as they correct for decision trees
+# habit of overfitting to their training set
+models = pd.DataFrame({'Model':['Support Vector Machines', 'KNN', 'Logistic Regression', 
+              'Random Forest', 'Decision Tree'],'Score':[svc_acc,knn_acc,lreg_acc,rad_forest,dec_acc]})
+#print(models.sort_values(by='Score',ascending=False))
+
+
+submission = pd.DataFrame({"PassengerId":test_src["PassengerId"],"Survived":Y_pred})
+submission.to_csv(PATH+"/output/submission.csv",index=False)
+
+
+
