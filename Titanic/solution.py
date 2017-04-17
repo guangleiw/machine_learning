@@ -3,12 +3,13 @@ import pandas as pd
 import numpy as np
 import sys
 import seaborn as sns
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVC
 sns.set(style='whitegrid')
 
@@ -111,9 +112,8 @@ parch_cor = train_src[['Parch','Survived']].groupby(['Parch'],as_index=False).me
 #grid.add_legend();
 #sns.plt.show()
 
-
 #fp = sns.factorplot('Pclass',hue='Survived',data=train_src,size=3,kind='count')
-fp = sns.factorplot('Sex',hue='Survived',data=train_src,size=3,kind='count')
+#fp = sns.factorplot('Sex',hue='Survived',data=train_src,size=3,kind='count')
 #fp.despine(left= True)
 #sns.plt.show()
 
@@ -154,7 +154,7 @@ for ele in all_src:
 #print(train_src.head())
 
 #drop the Name and PassengerId
-train_src = train_src.drop(['Name','PassengerId'],axis=1)
+train_src = train_src.drop(['Name','PassengerId'],axis=1) #axis=1 means in 2nd dimension(columns) not in 1st dimension(row) 
 test_src = test_src.drop(['Name'],axis=1)
 all_src = [train_src,test_src]
 #print(train_src.shape)
@@ -231,8 +231,8 @@ all_src = [train_src,test_src]
 # Embarked feature takes S Q C values based on port of embarkation .
 # Our training dataset has two missing values.
 # we simply fill these 	with the most common occurance 
-freq_port = train_src.Embarked.dropna().mode()[0]
-print(freq_port)
+freq_port = train_src.Embarked.dropna().mode()[0] #得出出现频次最高的那个元素
+#print(freq_port)
 for ele in all_src:
 	ele['Embarked'] = ele['Embarked'].fillna(freq_port)
 #print(train_src[['Embarked','Survived']].groupby(['Embarked'],as_index=False).mean().sort_values(by='Survived',ascending=False))
@@ -341,8 +341,23 @@ Y_pred = dec_tree.predict(X_test)
 dec_acc = round(dec_tree.score(X_train,Y_train)*100,2)
 # print(dec_acc)
 
+##using cross-validation to find the best n_estimators
+#k_range = range(100,151)
+#param_grid = dict(n_estimators=k_range)
+#random_forest=RandomForestClassifier()
+#grid=GridSearchCV(random_forest,param_grid,cv=10,scoring='accuracy')
+#grid.fit(X_train,Y_train)
+##print(k_range)
+##print(grid.cv_results_)
+#import matplotlib.pyplot as pp
+#mean_test_score = grid.cv_results_['mean_test_score']
+#pp.plot(k_range,mean_test_score)
+#pp.xlabel('Value of n_es for RandomForest')
+#pp.ylabel('Cross_validation Accuracy')
+#pp.show()
+
 # Random Forest
-random_forest = RandomForestClassifier(n_estimators=100)
+random_forest = RandomForestClassifier(n_estimators=109)
 random_forest.fit(X_train, Y_train)
 Y_pred = random_forest.predict(X_test)
 random_forest.score(X_train, Y_train)
@@ -358,8 +373,7 @@ print(rad_forest)
 # habit of overfitting to their training set
 models = pd.DataFrame({'Model':['Support Vector Machines', 'KNN', 'Logistic Regression', 
               'Random Forest', 'Decision Tree'],'Score':[svc_acc,knn_acc,lreg_acc,rad_forest,dec_acc]})
-#print(models.sort_values(by='Score',ascending=False))
-
+print(models.sort_values(by='Score',ascending=False))
 
 submission = pd.DataFrame({"PassengerId":test_src["PassengerId"],"Survived":Y_pred})
 submission.to_csv(PATH+"/output/submission.csv",index=False)
