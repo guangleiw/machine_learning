@@ -295,55 +295,56 @@ X_test = test_src.drop("PassengerId",axis=1).copy()
 #print(Y_train.shape)
 #print(X_test.shape)
 
-# Logsitic Regression
-lreg = LogisticRegression();
-lreg.fit(X_train,Y_train)
-Y_pred = lreg.predict(X_test)
-lreg_acc = round(lreg.score(X_train,Y_train)*100,2)
-#print(lreg_acc)
+## Logsitic Regression
+#lreg = LogisticRegression();
+#lreg.fit(X_train,Y_train)
+#Y_pred = lreg.predict(X_test)
+#lreg_acc = round(lreg.score(X_train,Y_train)*100,2)
+##print(lreg_acc)
 
-coeff_df = pd.DataFrame(train_src.columns.delete(0))
-coeff_df.columns = ['Feature']
-coeff_df['Correlation'] = pd.Series(lreg.coef_[0])
+#coeff_df = pd.DataFrame(train_src.columns.delete(0))
+#coeff_df.columns = ['Feature']
+#coeff_df['Correlation'] = pd.Series(lreg.coef_[0])
 
 #print(coeff_df.sort_values(by='Correlation',ascending=False))
 
 
-# Support Vector Machines
-svc = SVC()
-svc.fit(X_train,Y_train)
-Y_pred = svc.predict(X_test)
-svc_acc = round(svc.score(X_train,Y_train)*100,2)
-#print(svc_acc)
+## Support Vector Machines
+#svc = SVC()
+#svc.fit(X_train,Y_train)
+#Y_pred = svc.predict(X_test)
+#svc_acc = round(svc.score(X_train,Y_train)*100,2)
+##print(svc_acc)
 
-# KNN
-knn = KNeighborsClassifier(n_neighbors=3)
-knn.fit(X_train,Y_train)
-Y_pred = knn.predict(X_test)
-knn_acc = round(knn.score(X_train,Y_train)*100,2)
-#print(knn_acc)
+## KNN
+#knn = KNeighborsClassifier(n_neighbors=3)
+#knn.fit(X_train,Y_train)
+#Y_pred = knn.predict(X_test)
+#knn_acc = round(knn.score(X_train,Y_train)*100,2)
+##print(knn_acc)
 
-# Gaussian Naive Bayes
-gaus = GaussianNB()
-gaus.fit(X_train,Y_train)
-Y_pred = gaus.predict(X_test)
-gaus = round(gaus.score(X_train,Y_train)*100,2)
-#print(gaus)
+## Gaussian Naive Bayes
+#gaus = GaussianNB()
+#gaus.fit(X_train,Y_train)
+#Y_pred = gaus.predict(X_test)
+#gaus = round(gaus.score(X_train,Y_train)*100,2)
+##print(gaus)
 
 # Perceptron
 # Linear SVC
 # Stochastic Gradient Descent
 
-# Decision Tree
+## Decision Tree
 dec_tree = DecisionTreeClassifier()
 dec_tree.fit(X_train,Y_train)
 Y_pred = dec_tree.predict(X_test)
-dec_acc = round(dec_tree.score(X_train,Y_train)*100,2)
-# print(dec_acc)
+dec_acc = round(dec_tree.score(X_train,Y_train)*100,4)
+print(dec_tree.score(X_train,Y_train))
 
 ##using cross-validation to find the best n_estimators
+##print(X_train.info())
 #k_range = range(100,151)
-#param_grid = dict(n_estimators=k_range)
+#param_grid = dict(n_estimators=k_range,max_features=[7],max_depth=[10])
 #random_forest=RandomForestClassifier()
 #grid=GridSearchCV(random_forest,param_grid,cv=10,scoring='accuracy')
 #grid.fit(X_train,Y_train)
@@ -357,12 +358,12 @@ dec_acc = round(dec_tree.score(X_train,Y_train)*100,2)
 #pp.show()
 
 # Random Forest
-random_forest = RandomForestClassifier(n_estimators=109)
+random_forest = RandomForestClassifier(n_estimators=112,max_features=7,max_depth=10)
 random_forest.fit(X_train, Y_train)
 Y_pred = random_forest.predict(X_test)
 random_forest.score(X_train, Y_train)
-rad_forest = round(random_forest.score(X_train, Y_train) * 100, 2)
-print(rad_forest)
+rad_forest = round(random_forest.score(X_train, Y_train) * 100, 4)
+print(random_forest.score(X_train, Y_train))
 
 ########
 # Model evaluation 
@@ -371,12 +372,12 @@ print(rad_forest)
 # while both DEcision Tree and Random Forest score the same.
 # we choose to use random forest as they correct for decision trees
 # habit of overfitting to their training set
-models = pd.DataFrame({'Model':['Support Vector Machines', 'KNN', 'Logistic Regression', 
-              'Random Forest', 'Decision Tree'],'Score':[svc_acc,knn_acc,lreg_acc,rad_forest,dec_acc]})
-print(models.sort_values(by='Score',ascending=False))
+#models = pd.DataFrame({'Model':['Support Vector Machines', 'KNN', 'Logistic Regression', 
+              #'Random Forest', 'Decision Tree'],'Score':[svc_acc,knn_acc,lreg_acc,rad_forest,dec_acc]})
+#print(models.sort_values(by='Score',ascending=False))
+
+exit()
 
 submission = pd.DataFrame({"PassengerId":test_src["PassengerId"],"Survived":Y_pred})
 submission.to_csv(PATH+"/output/submission.csv",index=False)
-
-
 
