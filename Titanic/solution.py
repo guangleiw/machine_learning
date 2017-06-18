@@ -129,18 +129,18 @@ all_src = [train_src,test_src]
 #exit();
 
 for ele in all_src:
-	ele['Title'] = ele.Name.str.extract(' ([A-Za-z]+)\.',expand=False)
-	#print(ele['Title'])
+    ele['Title'] = ele.Name.str.extract(' ([A-Za-z]+)\.',expand=False)
+    #print(ele['Title'])
 
 #print(all_src[1].Title)
 pd.crosstab(train_src['Title'],train_src['Sex'])
 
 for ele in all_src:
-	ele['Title'] = ele['Title'].replace(['Lady', 'Countess','Capt', 'Col',\
- 	'Don', 'Dr', 'Major', 'Rev', 'Sir', 'Jonkheer', 'Dona'],'Rare')
-	ele['Title'] = ele['Title'].replace('Mlle', 'Miss')
-	ele['Title'] = ele['Title'].replace('Ms', 'Miss')
-	ele['Title'] = ele['Title'].replace('Mme', 'Mrs')
+    ele['Title'] = ele['Title'].replace(['Lady', 'Countess','Capt', 'Col',\
+                                             'Don', 'Dr', 'Major', 'Rev', 'Sir', 'Jonkheer', 'Dona'],'Rare')
+    ele['Title'] = ele['Title'].replace('Mlle', 'Miss')
+    ele['Title'] = ele['Title'].replace('Ms', 'Miss')
+    ele['Title'] = ele['Title'].replace('Mme', 'Mrs')
 
 ## check the distribution of title
 #print(train_src[['Title','Survived']].groupby(['Title'],as_index=False).mean())
@@ -148,9 +148,9 @@ for ele in all_src:
 # replace the Name to ordinal
 title_mapping={"Mr":1,"Miss":2,"Mrs":3,"Master":4,"Rare":5}
 for ele in all_src:
-	ele['Title'] = ele['Title'].map(title_mapping)
-	ele['Title'] = ele['Title'].fillna(0)
-	
+    ele['Title'] = ele['Title'].map(title_mapping)
+    ele['Title'] = ele['Title'].fillna(0)
+
 #print(train_src.head())
 
 #drop the Name and PassengerId
@@ -162,27 +162,27 @@ all_src = [train_src,test_src]
 
 # Converting a categorical feature gender
 for ele in all_src:
-	ele['Sex'] = ele['Sex'].map({"male":0,"female":1}).astype(int)
+    ele['Sex'] = ele['Sex'].map({"male":0,"female":1}).astype(int)
 
 #print(train_src.head())
 
 guess_ages = np.zeros((2,3))
 for ele in all_src:
-	#print(ele.info());exit();
-	for i in range(0,2):
-		for j in range(0,3):
-			idx = (ele['Sex'] == i) & (ele['Pclass'] == j+1);
-			guess = ele[idx]['Age'].dropna()
-			#print(guess);exit();
-			guess_age = guess.median()
-			#print(type(guess_age)) 
-			#exit()			
-			guess_ages[i,j] = (guess_age/0.5 + 0.5)*0.5
-			
-	for i in range(0,2):
-		for j in range(0,3):
-			ele.loc[(ele.Age.isnull())&(ele['Sex'] == i)&(ele['Pclass'] == j+1),'Age'] = guess_ages[i,j]
-	ele['Age'] = ele.Age.astype(int)
+    #print(ele.info());exit();
+    for i in range(0,2):
+        for j in range(0,3):
+            idx = (ele['Sex'] == i) & (ele['Pclass'] == j+1);
+            guess = ele[idx]['Age'].dropna()
+            #print(guess);exit();
+            guess_age = guess.median()
+            #print(type(guess_age)) 
+            #exit()			
+            guess_ages[i,j] = (guess_age/0.5 + 0.5)*0.5
+
+    for i in range(0,2):
+        for j in range(0,3):
+            ele.loc[(ele.Age.isnull())&(ele['Sex'] == i)&(ele['Pclass'] == j+1),'Age'] = guess_ages[i,j]
+    ele['Age'] = ele.Age.astype(int)
 
 #print(train_src.head())
 # Create Age bands and determine correlations with Survived.
@@ -192,12 +192,12 @@ age_sur = train_src[['AgeBand','Survived']].groupby(['AgeBand'],as_index = False
 #print(age_sur)
 
 for ele in all_src:
-	ele.loc[ele['Age']<= 16,'Age'] = 0
-	ele.loc[(ele['Age']> 16) & (ele['Age'] <=32),'Age'] = 1
-	ele.loc[(ele['Age']> 32) & (ele['Age'] <=48),'Age'] = 2
-	ele.loc[(ele['Age']> 48) & (ele['Age'] <=64),'Age'] = 3
-	ele.loc[ele['Age']>64,'Age'] = 4
-	
+    ele.loc[ele['Age']<= 16,'Age'] = 0
+    ele.loc[(ele['Age']> 16) & (ele['Age'] <=32),'Age'] = 1
+    ele.loc[(ele['Age']> 32) & (ele['Age'] <=48),'Age'] = 2
+    ele.loc[(ele['Age']> 48) & (ele['Age'] <=64),'Age'] = 3
+    ele.loc[ele['Age']>64,'Age'] = 4
+
 #print(train_src.head())
 # remove the AgeBand feature
 train_src = train_src.drop(['AgeBand'],axis = 1)
@@ -209,14 +209,14 @@ all_src = [train_src,test_src]
 # we can create a new feature for FamilySize which combines Parch and SibSp
 # And then , we can drop the above features
 for ele in all_src:
-	ele['FamilySize'] = ele['SibSp'] + ele['Parch'] + 1
+    ele['FamilySize'] = ele['SibSp'] + ele['Parch'] + 1
 famsize_sur = train_src[['FamilySize','Survived']].groupby(['FamilySize'],as_index = False).mean().sort_values(by='Survived',ascending=False)
 #print(famsize_sur)
 
 #create a new feature called IsAlone
 for ele in all_src:
-	ele['IsAlone'] = 0;
-	ele.loc[ele.FamilySize == 1,'IsAlone'] = 1
+    ele['IsAlone'] = 0;
+    ele.loc[ele.FamilySize == 1,'IsAlone'] = 1
 
 #print(train_src[['IsAlone','Survived']].groupby(['IsAlone'],as_index=False).mean())
 
@@ -234,11 +234,11 @@ all_src = [train_src,test_src]
 freq_port = train_src.Embarked.dropna().mode()[0] #得出出现频次最高的那个元素
 #print(freq_port)
 for ele in all_src:
-	ele['Embarked'] = ele['Embarked'].fillna(freq_port)
+    ele['Embarked'] = ele['Embarked'].fillna(freq_port)
 #print(train_src[['Embarked','Survived']].groupby(['Embarked'],as_index=False).mean().sort_values(by='Survived',ascending=False))
 #converting categorical feature to numeric
 for ele in all_src:
-	ele['Embarked'] = ele['Embarked'].map({'S':0,'C':1,'Q':2}).astype(int)
+    ele['Embarked'] = ele['Embarked'].map({'S':0,'C':1,'Q':2}).astype(int)
 #print(train_src.head())
 
 # Complete the Fare feature for single missing value in
@@ -253,12 +253,12 @@ fareband_sur = train_src[['FareBand','Survived']].groupby(['FareBand'],as_index 
 #print(fareband_sur);
 
 for ele in all_src:
-	ele.loc[ele['Fare']<=7.91,'Fare'] = 0
-	ele.loc[(ele['Fare']>7.91) & (ele['Fare']<=14.454),'Fare'] = 1
-	ele.loc[(ele['Fare']>14.454) & (ele['Fare']<= 31),'Fare'] = 2
-	ele.loc[(ele['Fare']>31) & (ele['Fare']<= 512.329),'Fare'] = 3
-	ele['Fare'] = ele['Fare'].astype(int)
-	
+    ele.loc[ele['Fare']<=7.91,'Fare'] = 0
+    ele.loc[(ele['Fare']>7.91) & (ele['Fare']<=14.454),'Fare'] = 1
+    ele.loc[(ele['Fare']>14.454) & (ele['Fare']<= 31),'Fare'] = 2
+    ele.loc[(ele['Fare']>31) & (ele['Fare']<= 512.329),'Fare'] = 3
+    ele['Fare'] = ele['Fare'].astype(int)
+
 train_src = train_src.drop(['FareBand'],axis = 1)
 all_src = [train_src , test_src]
 #print(train_src.head())
@@ -373,10 +373,10 @@ print(random_forest.score(X_train, Y_train))
 # we choose to use random forest as they correct for decision trees
 # habit of overfitting to their training set
 #models = pd.DataFrame({'Model':['Support Vector Machines', 'KNN', 'Logistic Regression', 
-              #'Random Forest', 'Decision Tree'],'Score':[svc_acc,knn_acc,lreg_acc,rad_forest,dec_acc]})
+        #'Random Forest', 'Decision Tree'],'Score':[svc_acc,knn_acc,lreg_acc,rad_forest,dec_acc]})
 #print(models.sort_values(by='Score',ascending=False))
 
-exit()
+#exit()
 
 submission = pd.DataFrame({"PassengerId":test_src["PassengerId"],"Survived":Y_pred})
 submission.to_csv(PATH+"/output/submission.csv",index=False)
