@@ -9,3 +9,6 @@ kaggle/.idea/other.xml
 kaggle/.idea/scopes/scope_settings.xml
 kaggle/.idea/testrunner.xml
 kaggle/.idea/vcs.xml
+house_prices/data/gz/sample_submission.csv.gz
+house_prices/data/gz/test.csv.gz
+house_prices/data/gz/train.csv.gz
