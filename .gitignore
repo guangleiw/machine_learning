@@ -12,3 +12,5 @@ kaggle/.idea/vcs.xml
 house_prices/data/gz/sample_submission.csv.gz
 house_prices/data/gz/test.csv.gz
 house_prices/data/gz/train.csv.gz
+machine_learning.wpr
+kaggle/.idea/workspace.xml
