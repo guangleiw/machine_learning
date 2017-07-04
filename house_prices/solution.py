@@ -3,6 +3,8 @@ import sys
 import pandas as pd
 import numpy as np
 import seaborn as sns
+import matplotlib.pyplot as plt
+#%matplotlib inline
 
 PATH = sys.path[0]
 
@@ -33,4 +35,16 @@ train_src = pd.read_csv(PATH+"/data/train.csv")
 #print(train_src.LotShape[train_src['LotShape']);
 
 ## 统计LandContour为空的个数
-print((pd.isnull(train_src.LandContour)).value_counts())
+#print((pd.isnull(train_src.LandContour)).value_counts())
+
+#print(train_src.describe)
+plt.figure(figsize=(12,5))
+plt.subplot(121)
+sns.distplot(train_src['SalePrice'],kde=False)
+plt.xlabel("Sale Price")
+plt.axes([0,800000,0,180])
+plt.subplot(122)
+sns.distplot(np.log(train_src['SalePrice']),kde=False)
+plt.xlabel('Log (sale price)')
+plt.axes([10,14,0,180])
+plt.show()
