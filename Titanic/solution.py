@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import sys
 import seaborn as sns
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
@@ -66,15 +66,15 @@ test_src=pd.read_csv(PATH+"/input/test.csv")
 #exit()
 
 ###
-#S0=train_src.Age[train_src.Survived ==0].value_counts()
-#S1=train_src.Age[train_src.Survived ==1].value_counts()
+# S0=train_src.Age[train_src.Survived ==0].value_counts()
+# S1=train_src.Age[train_src.Survived ==1].value_counts()
 
-#fig = plt.figure()
-#fig.set(alpha=0.2)
-#df=pd.DataFrame({'saved':S1,'dead':S0})
-#df.plot(kind='bar',stacked=True)
-#plt.show()
-#exit()
+# fig = plt.figure()
+# fig.set(alpha=0.2)
+# df=pd.DataFrame({'saved':S1,'dead':S0})
+# df.plot(kind='bar',stacked=True)
+# plt.show()
+# exit()
 ###
 #g=sns.FacetGrid(train_src,col='Survived')
 #g.map(plt.hist,'Age',bins=20)
