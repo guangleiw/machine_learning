@@ -14,3 +14,7 @@ house_prices/data/gz/test.csv.gz
 house_prices/data/gz/train.csv.gz
 machine_learning.wpr
 kaggle/.idea/workspace.xml
+house_prices/pics/distribution_saleprice.png
+Titanic/__init__.py
+house_prices/pics/GrLivArea_SalePrice.png
+house_prices/pics/TotalBsmtSF_SalePrice.png
