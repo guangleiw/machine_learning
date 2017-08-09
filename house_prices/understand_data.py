@@ -76,5 +76,56 @@ sns.set(font_scale=1.25)
 # 客观分析 -- SalePrice和相关变量的散点图
 sns.set()
 cols=['SalePrice', 'OverallQual', 'GrLivArea', 'GarageCars', 'TotalBsmtSF', 'FullBath', 'YearBuilt']
-sns.pairplot(df_train[cols],size=1.5)
+#sns.pairplot(df_train[cols],size=1.5)
+#sns.plt.show()
+
+########################################
+# 缺失值处理
+total=df_train.isnull().sum().sort_values(ascending=False)
+percent=(df_train.isnull().sum()/df_train.isnull().count()).sort_values(ascending=False)
+missing_data=pd.concat([total,percent],axis=1,keys=['Total','Percent'])
+#print(missing_data.head(20))
+
+#deleting the missing data
+df_train= df_train.drop((missing_data[missing_data['Total']>1]).index,1)
+df_train=df_train.drop(df_train.loc[df_train['Electrical'].isnull()].index)
+#print(df_train.isnull().sum().max())
+
+########################################
+# 奇异值处理
+# standardizing the data
+saleprice_scaled = StandardScaler().fit_transform(df_train['SalePrice'][:,np.newaxis]);
+low_range = saleprice_scaled[saleprice_scaled[:,0].argsort()][:10]
+high_range= saleprice_scaled[saleprice_scaled[:,0].argsort()][-10:]
+#print('outer range (low) of the distribution:')
+#print(low_range)
+#print('\nouter range (high) of the distribution:')
+#print(high_range)
+
+# 二元变量的散点图 -- 深入
+var='GrLivArea'
+data=pd.concat([df_train['SalePrice'],df_train[var]],axis=1)
+#data.plot.scatter(x=var,y='SalePrice',ylim=(0,800000))
+#sns.plt.show()
+
+#delete points
+df_train.sort_values(by='GrLivArea',ascending=False)[:2]
+df_train=df_train.drop(df_train[df_train['Id'] == 1299].index)
+df_train=df_train.drop(df_train[df_train['Id'] == 524].index)
+
+var='TotalBsmtSF'
+data=pd.concat([df_train['SalePrice'],df_train[var]],axis=1)
+#data.plot.scatter(x=var,y='SalePrice',ylim=(0,800000))
+#sns.plt.show()
+
+#histogram and normal probability plot
+#sns.distplot(df_train['SalePrice'],fit=norm)
+#fig = plt.figure()
+#res = stats.probplot(df_train['SalePrice'],plot=plt)
+#sns.plt.show()
+
+#applying log transformation
+sns.distplot(np.log(df_train['SalePrice']),fit=norm)
+fig = plt.figure()
+res = stats.probplot(np.log(df_train['SalePrice']),plot=plt)
 sns.plt.show()
